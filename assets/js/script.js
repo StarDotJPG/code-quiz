@@ -53,39 +53,56 @@ quizQuestions = [
         correctAnswer: "console.log"
     }
 ]
-var pageContentEl = document.querySelector(".page-content");
+// divs
+var welcomePageDiv      = document.querySelector(".welcome-page");
+var questionsPageDiv    = document.querySelector(".questions-page");
+var endQuizDiv          = document.querySelector(".end-quiz-page");
+var highScoresDiv       = document.querySelector(".view-high-scores-page");
 var pageContentHeaderEl = document.querySelector(".page-content-header");
-var pageContentBodyEl = document.querySelector(".page-content-body");
-var startQuizEl = document.querySelector("#start-quiz-btn");
-var startQuizElById = document.getElementById("#start-quiz-btn");
-var footerEl = document.querySelector(".footer");
-var highScoreMessage = "Go back or clear high scores buttons";
-var i = 0;
+var footerEl            = document.querySelector(".footer");
+
+// buttons
+var headerHighScoreBtn  = document.querySelector(".view-high-scores-btn");
+var submitHighScoreBtn  = document.querySelector(".submit-high-score-btn");
+var goBackBtn           = document.querySelector(".go-back-btn");
+var startQuizBtn        = document.querySelector(".start-quiz-btn");
+var clearHighScoresBtn  = document.querySelector(".clear-high-scores-btn");
+
+// other variables
+var questionsAsked      = 0;
 
 /* END VARIBLE DECLARATIONS */
 
-// TODO: View high scores, uppoer left hand corner
-// TODO: Timer, upper right corner
 
 /* BEGIN FUNCTION DECLARATIONS */
 
 var displayWelcome = function () {
     console.log("displayWelcome: Displaying welcome screen");
 
-    pageContentHeaderEl.textContent = "Coding Challenge Quiz";    
-    pageContentBodyEl.textContent = "Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your score/time by ten seconds!";
-    startQuizEl.textContent = "Start Quiz";
+    //reset questions asked to 0, since we're starting a new quiz
+    questionsAsked = 0;
 
+    //hide all the child divs of page-content and just display the welcome div
+    hideAllContentChildDivs();
+    welcomePageDiv.setAttribute("style", "visiblity: ")
+    welcomePageDiv.querySelector("h1").textContent = "Coding Challenge Quiz";
+    welcomePageDiv.querySelector("p").textContent = "Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your score/time by ten seconds!";
+    startQuizBtn.textContent = "Start Quiz";
 }
 
 var displayQuestionAndAnswers = function () {
-    console.log("displayQuestionAndAnswers: Displaying question at iteration: " + i);
-    //clear any existing text and hide start quiz button
-    pageContentBodyEl.textContent = "";
-    startQuizEl.setAttribute("style", "display:none");
+    console.log("displayQuestionAndAnswers: Displaying question at iteration: " + questionsAsked);
+
+    //hide all the child divs of page-content and just disply the questions div
+    hideAllContentChildDivs();
+    questionsPageDiv.setAttribute("style", "visiblity: ");
+    //clear all the child elements in questionsPageDiv since we will dynamically create everything
+    questionsPageDiv.innerHTML = '';
 
     //set the h1 to the text of the question
-    pageContentHeaderEl.textContent = quizQuestions[i].question;
+    var questionEl = document.createElement("h1");
+    questionEl.textContent = quizQuestions[questionsAsked].question;
+    questionsPageDiv.appendChild(questionEl);
 
     // as long as there are more answers to display, create more buttons
     for (var p = 0; p < quizQuestions[i].answers.length; p++) {
@@ -94,11 +111,11 @@ var displayQuestionAndAnswers = function () {
         answerBtnEl.className = "answer-btn";
 
         //set text of button to available answers
-        answerBtnEl.textContent = quizQuestions[i].answers[p];
-        console.log("Displyaing answer: " + quizQuestions[i].answers[p] + " at answer loop iteration: " + p);
+        answerBtnEl.textContent = quizQuestions[questionsAsked].answers[p];
+        console.log("Displyaing answer: " + quizQuestions[questionsAsked].answers[p] + " at answer loop iteration: " + p);
 
         //add buttons to page
-        pageContentBodyEl.appendChild(answerBtnEl);
+        questionsPageDiv.appendChild(answerBtnEl);
     }
 }
 
@@ -108,7 +125,7 @@ var checkAnswer = function (event) {
         console.log("checkAnswer: User clicked: " + event.target.textContent);
 
         //check if the clicked answer is correct or wrong
-        if (event.target.textContent == quizQuestions[i].correctAnswer) {
+        if (event.target.textContent == quizQuestions[questionsAsked].correctAnswer) {
             footerEl.textContent = "Correct!";
             console.log("Correct answer selected");
         }
@@ -118,11 +135,11 @@ var checkAnswer = function (event) {
         }
 
         //advance the iterator
-        i++;
+        questionsAsked++;
 
         // as long as there are more questions in quizQuestions, display the next question
-        if (i < quizQuestions.length) {
-            console.log("Found more questions to ask. Iterator at: " + i);
+        if (questionsAsked < quizQuestions.length) {
+            console.log("Found more questions to ask. Iterator at: " + questionsAsked);
             displayQuestionAndAnswers();
         }
         else {
@@ -135,44 +152,54 @@ var checkAnswer = function (event) {
 var endQuiz = function () {
     console.log("endQuiz: End of quiz reached");
 
-    pageContentHeaderEl.textContent = "All done! Your final score is: ";
-    pageContentBodyEl.textContent = "Enter initials: ";
-    
-    var initialsTextBox = document.createElement("input");
-    var submitScore = document.createElement("button");
-    submitScore.className = "submit-high-score-btn";
-    submitScore.textContent = "Submit";
+    //hide all the child divs of page-content and just disply the end quiz div
+    hideAllContentChildDivs();
+    endQuizDiv.setAttribute("style", "visiblity: ");
 
-    pageContentBodyEl.appendChild(initialsTextBox);
-    pageContentBodyEl.appendChild(submitScore);
+    endQuizDiv.querySelector("h1").textContent = "All done! Your final score is: ";
+    endQuizDiv.querySelector("p").textContent = "Enter initials: ";
 
 }
 
-var submitHighScore = function (event) {
-    if (event.target.className == "submit-high-score-btn") {
-        console.log("submitHighScore: Submit high score button clicked");
+var submitHighScore = function () {
+    console.log("submitHighScore: Asking user for initials for high score");
 
-        pageContentHeaderEl.textContent = "High scores";
-        pageContentBodyEl.textContent = "";
-        footerEl.textContent = "";
+    footerEl.textContent = "";
+    submitHighScoreBtn.textContent = "Submit";
+}
 
-        var goBackButton = document.createElement("button");
-        goBackButton.textContent = "Go Back";
-        var clearHighScores = document.createElement("button");
-        clearHighScores.textContent = "Clear High Scores";
+var showHighScores = function () {
+    console.log("showHighScore: Displaying high scores");
 
-        pageContentBodyEl.appendChild(goBackButton);
-        pageContentBodyEl.appendChild(clearHighScores);
+    //hide all the child divs of page-content and just disply the high score div
+    hideAllContentChildDivs();
+    highScoresDiv.setAttribute("style", "visiblity: ");
+
+    highScoresDiv.querySelector("h1").textContent = "High Scores";
+    goBackBtn.textContent = "Go Back";
+    clearHighScoresBtn = "Clear High Scores";
+}
+
+var hideAllContentChildDivs = function () {
+    var childElements = document.querySelector(".page-content").children
+    for (i = 0; i < childElements.length; i++) {
+        if (childElements[i].localName = "div") {
+            childElements[i].setAttribute("style", "display:none");
+        }
     }
 }
+
 
 /* END FUNCTION DECLARATIONS */
 
 /* BEGIN EVENT LISTENERS */
 
-startQuizEl.addEventListener("click", displayQuestionAndAnswers);
-pageContentEl.addEventListener("click", checkAnswer);
-pageContentEl.addEventListener("click", submitHighScore);
+startQuizBtn.addEventListener("click", displayQuestionAndAnswers);
+questionsPageDiv.addEventListener("click", checkAnswer);
+headerHighScoreBtn.addEventListener("click", showHighScores);
+submitHighScoreBtn.addEventListener("click", showHighScores);
+goBackBtn.addEventListener("click", displayWelcome);
+
 
 /*END EVENT LISTENERS */
 
