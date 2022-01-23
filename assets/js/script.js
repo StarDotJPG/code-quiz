@@ -54,23 +54,27 @@ quizQuestions = [
     }
 ]
 // divs
-var welcomePageDiv      = document.querySelector(".welcome-page");
-var questionsPageDiv    = document.querySelector(".questions-page");
-var endQuizDiv          = document.querySelector(".end-quiz-page");
-var highScoresDiv       = document.querySelector(".view-high-scores-page");
-var footerDiv           = document.querySelector(".footer");
+var welcomePageDiv = document.querySelector(".welcome-page");
+var questionsPageDiv = document.querySelector(".questions-page");
+var endQuizDiv = document.querySelector(".end-quiz-page");
+var highScoresDiv = document.querySelector(".view-high-scores-page");
+var footerDiv = document.querySelector(".footer");
 var pageContentHeaderEl = document.querySelector(".page-content-header");
-var correctOrWrongEl    = document.querySelector(".correct-or-wrong");
+var correctOrWrongEl = document.querySelector(".correct-or-wrong");
 
 // buttons
-var headerHighScoreBtn  = document.querySelector(".view-high-scores-btn");
-var submitHighScoreBtn  = document.querySelector(".submit-high-score-btn");
-var goBackBtn           = document.querySelector(".go-back-btn");
-var startQuizBtn        = document.querySelector(".start-quiz-btn");
-var clearHighScoresBtn  = document.querySelector(".clear-high-scores-btn");
+var headerHighScoreBtn = document.querySelector(".view-high-scores-btn");
+var submitHighScoreBtn = document.querySelector(".submit-high-score-btn");
+var goBackBtn = document.querySelector(".go-back-btn");
+var startQuizBtn = document.querySelector(".start-quiz-btn");
+var clearHighScoresBtn = document.querySelector(".clear-high-scores-btn");
 
 // other variables
-var questionsAsked      = 0;
+var questionsAsked = 0;
+var quizTimeInSec = 75;
+var timerEl = document.querySelector(".timer");
+var timerTimeout;
+var playerInitials;
 
 /* END VARIBLE DECLARATIONS */
 
@@ -83,9 +87,12 @@ var displayWelcome = function () {
     //reset questions asked to 0, since we're starting a new quiz
     questionsAsked = 0;
 
+    //reset the timer, since we're starting a new quiz
+    quizTimeInSec = 75;
+
     //hide all the child divs of page-content and just display the welcome div
     hideAllContentChildDivs();
-    welcomePageDiv.setAttribute("style", "visiblity: ")
+    welcomePageDiv.style.display = "block";
     welcomePageDiv.querySelector("h1").textContent = "Coding Challenge Quiz";
     welcomePageDiv.querySelector("p").textContent = "Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your score/time by ten seconds!";
     startQuizBtn.textContent = "Start Quiz";
@@ -96,10 +103,14 @@ var displayQuestionAndAnswers = function () {
 
     //hide all the child divs of page-content and just disply the questions and footer div
     hideAllContentChildDivs();
-    questionsPageDiv.setAttribute("style", "visiblity: ");
-    footerDiv.setAttribute("style", "visibility: ");
+    questionsPageDiv.style.display = "block";
+    footerDiv.style.display = "block";
     //clear all the child elements in questionsPageDiv since we will dynamically create everything
     questionsPageDiv.innerHTML = '';
+
+    //setup the timer
+    decrementTimer(); //call the timer once in order to get it to display as soon as we start the quiz
+    timerTimeout = setInterval(decrementTimer, 1000);
 
     //set the h1 to the text of the question
     var questionEl = document.createElement("h1");
@@ -141,11 +152,15 @@ var checkAnswer = function (event) {
         }
         else {
             correctOrWrongEl.textContent = "Wrong!";
-            console.log("Wrong answer selected");
+            quizTimeInSec = quizTimeInSec - 5;
+            console.log("Wrong answer selected. Subtracting 5 seconds from time remaining.");
         }
 
         //advance the iterator
         questionsAsked++;
+
+        //stop the timer since we will restart it when we ask the next quesiton
+        clearTimeout(timerTimeout);
 
         // as long as there are more questions in quizQuestions, display the next question
         if (questionsAsked < quizQuestions.length) {
@@ -164,19 +179,21 @@ var endQuiz = function () {
 
     //hide all the child divs of page-content and just disply the end quiz and the footer div
     hideAllContentChildDivs();
-    endQuizDiv.setAttribute("style", "visiblity: ");
-    footerDiv.setAttribute("style", "visibility: ");
+    endQuizDiv.style.display = "block";
+    footerDiv.style.display = "block";
 
     endQuizDiv.querySelector("h1").textContent = "All done!";
-    endQuizDiv.querySelector(".final-score-text").textContent = "Your final score is: ";
+    endQuizDiv.querySelector(".final-score-text").textContent = "Your final score is: " + quizTimeInSec;
     endQuizDiv.querySelector(".enter-initials-text").textContent = "Enter initials: ";
     submitHighScoreBtn.textContent = "Submit";
 }
 
-var submitHighScore = function () {
-    console.log("submitHighScore: Asking user for initials for high score");
+var saveHighScore = function () {
+    console.log("saveHighScore: Saving high score: " + playerInitials + " " + quizTimeInSec);
 
-    correctOrWrongEl.textContent = "";    
+    localStorage.setItem("high score", playerInitials + quizTimeInSec)
+    showHighScores();
+
 }
 
 var showHighScores = function () {
@@ -184,22 +201,38 @@ var showHighScores = function () {
 
     //hide all the child divs of page-content and just disply the high score div
     hideAllContentChildDivs();
-    highScoresDiv.setAttribute("style", "visiblity: ");
+    highScoresDiv.style.display = "block";
+
+    //hide the timer
+    timerEl.textContent = "";
 
     highScoresDiv.querySelector("h1").textContent = "High Scores";
     goBackBtn.textContent = "Go Back";
     clearHighScoresBtn.textContent = "Clear High Scores";
+
+    console.log("Got high score: " + localStorage.getItem)
+
+}
+
+var decrementTimer = function () {
+    if (quizTimeInSec == 0) {
+        //stop the timer
+        clearTimeout(timerTimeout);
+        console.log("decrementTimer: Time is up, ending quiz.")
+        endQuiz();
+    }
+    timerEl.textContent = "Time left: " + quizTimeInSec;
+    quizTimeInSec--;
 }
 
 var hideAllContentChildDivs = function () {
     var childElements = document.querySelector(".page-content").children
     for (i = 0; i < childElements.length; i++) {
         if (childElements[i].localName = "div") {
-            childElements[i].setAttribute("style", "display:none");
+            childElements[i].style.display = "none";
         }
     }
 }
-
 
 /* END FUNCTION DECLARATIONS */
 
@@ -208,7 +241,7 @@ var hideAllContentChildDivs = function () {
 startQuizBtn.addEventListener("click", displayQuestionAndAnswers);
 questionsPageDiv.addEventListener("click", checkAnswer);
 headerHighScoreBtn.addEventListener("click", showHighScores);
-submitHighScoreBtn.addEventListener("click", showHighScores);
+submitHighScoreBtn.addEventListener("click", saveHighScore);
 goBackBtn.addEventListener("click", displayWelcome);
 
 

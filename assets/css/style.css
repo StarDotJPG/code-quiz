@@ -35,7 +35,14 @@ input {
     font-family: sans-serif; 
 }
 
-/*this is the parent flex container*/
+/*this is the parent flex container for the header */
+header {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 40px;
+}
+
+/*this is the parent flex container for the divs under main*/
 .page-content {
     display: flex;
     flex-direction: column;
@@ -45,11 +52,13 @@ input {
 .welcome-page {
     width: 60%;
     margin: auto;
+    display: none;
 }
 
 .questions-page {
     width: 60%;
     margin: auto;
+    display: none;
 }
 
 .answer-btn-parent-container {
@@ -66,6 +75,7 @@ input {
 .end-quiz-page {
     width: 60%;
     margin: auto;
+    display: none;
 }
 
 .end-quiz-page p {
@@ -77,6 +87,7 @@ input {
 .view-high-scores-page {
     width: 60%;
     margin: auto;
+    display: none;
 }
   
 .view-high-scores-btn {
@@ -89,7 +100,7 @@ input {
     cursor: pointer;
 }
 
-.footer {
+.footer-container {
     display: flex;
     justify-content: center;
     font-size: 20px;
