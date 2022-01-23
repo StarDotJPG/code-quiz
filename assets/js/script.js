@@ -58,8 +58,9 @@ var welcomePageDiv      = document.querySelector(".welcome-page");
 var questionsPageDiv    = document.querySelector(".questions-page");
 var endQuizDiv          = document.querySelector(".end-quiz-page");
 var highScoresDiv       = document.querySelector(".view-high-scores-page");
+var footerDiv           = document.querySelector(".footer");
 var pageContentHeaderEl = document.querySelector(".page-content-header");
-var footerEl            = document.querySelector(".footer");
+var correctOrWrongEl    = document.querySelector(".correct-or-wrong");
 
 // buttons
 var headerHighScoreBtn  = document.querySelector(".view-high-scores-btn");
@@ -93,9 +94,10 @@ var displayWelcome = function () {
 var displayQuestionAndAnswers = function () {
     console.log("displayQuestionAndAnswers: Displaying question at iteration: " + questionsAsked);
 
-    //hide all the child divs of page-content and just disply the questions div
+    //hide all the child divs of page-content and just disply the questions and footer div
     hideAllContentChildDivs();
     questionsPageDiv.setAttribute("style", "visiblity: ");
+    footerDiv.setAttribute("style", "visibility: ");
     //clear all the child elements in questionsPageDiv since we will dynamically create everything
     questionsPageDiv.innerHTML = '';
 
@@ -104,8 +106,13 @@ var displayQuestionAndAnswers = function () {
     questionEl.textContent = quizQuestions[questionsAsked].question;
     questionsPageDiv.appendChild(questionEl);
 
+    //create a container for the answer buttons
+    var answerButtonContainer = document.createElement("div")
+    answerButtonContainer.setAttribute("class", "answer-btn-container");
+    questionsPageDiv.appendChild(answerButtonContainer);
+
     // as long as there are more answers to display, create more buttons
-    for (var p = 0; p < quizQuestions[i].answers.length; p++) {
+    for (var p = 0; p < quizQuestions[questionsAsked].answers.length; p++) {
         //create answer button
         var answerBtnEl = document.createElement("button");
         answerBtnEl.className = "answer-btn";
@@ -115,7 +122,7 @@ var displayQuestionAndAnswers = function () {
         console.log("Displyaing answer: " + quizQuestions[questionsAsked].answers[p] + " at answer loop iteration: " + p);
 
         //add buttons to page
-        questionsPageDiv.appendChild(answerBtnEl);
+        questionsPageDiv.querySelector(".answer-btn-container").appendChild(answerBtnEl);
     }
 }
 
@@ -124,13 +131,16 @@ var checkAnswer = function (event) {
     if (event.target.className == "answer-btn") {
         console.log("checkAnswer: User clicked: " + event.target.textContent);
 
+        //turn on the border line for the footer:
+        correctOrWrongEl.setAttribute("style", "border-top: solid");
+
         //check if the clicked answer is correct or wrong
         if (event.target.textContent == quizQuestions[questionsAsked].correctAnswer) {
-            footerEl.textContent = "Correct!";
+            correctOrWrongEl.textContent = "Correct!";
             console.log("Correct answer selected");
         }
         else {
-            footerEl.textContent = "Wrong!";
+            correctOrWrongEl.textContent = "Wrong!";
             console.log("Wrong answer selected");
         }
 
@@ -152,20 +162,21 @@ var checkAnswer = function (event) {
 var endQuiz = function () {
     console.log("endQuiz: End of quiz reached");
 
-    //hide all the child divs of page-content and just disply the end quiz div
+    //hide all the child divs of page-content and just disply the end quiz and the footer div
     hideAllContentChildDivs();
     endQuizDiv.setAttribute("style", "visiblity: ");
+    footerDiv.setAttribute("style", "visibility: ");
 
-    endQuizDiv.querySelector("h1").textContent = "All done! Your final score is: ";
-    endQuizDiv.querySelector("p").textContent = "Enter initials: ";
-
+    endQuizDiv.querySelector("h1").textContent = "All done!";
+    endQuizDiv.querySelector(".final-score-text").textContent = "Your final score is: ";
+    endQuizDiv.querySelector(".enter-initials-text").textContent = "Enter initials: ";
+    submitHighScoreBtn.textContent = "Submit";
 }
 
 var submitHighScore = function () {
     console.log("submitHighScore: Asking user for initials for high score");
 
-    footerEl.textContent = "";
-    submitHighScoreBtn.textContent = "Submit";
+    correctOrWrongEl.textContent = "";    
 }
 
 var showHighScores = function () {
@@ -177,7 +188,7 @@ var showHighScores = function () {
 
     highScoresDiv.querySelector("h1").textContent = "High Scores";
     goBackBtn.textContent = "Go Back";
-    clearHighScoresBtn = "Clear High Scores";
+    clearHighScoresBtn.textContent = "Clear High Scores";
 }
 
 var hideAllContentChildDivs = function () {
