@@ -59,7 +59,6 @@ var questionsPageDiv = document.querySelector(".questions-page");
 var endQuizDiv = document.querySelector(".end-quiz-page");
 var highScoresDiv = document.querySelector(".view-high-scores-page");
 var footerDiv = document.querySelector(".footer");
-var pageContentHeaderEl = document.querySelector(".page-content-header");
 var correctOrWrongEl = document.querySelector(".correct-or-wrong");
 
 // buttons
@@ -224,7 +223,7 @@ var showHighScores = function () {
 
     //clear the timeout in case user clicks "view high scores" while taking a quiz
     clearTimeout(timerTimeout);
-    
+
     //hide the timer
     timerEl.textContent = "";
 
@@ -260,6 +259,7 @@ var showHighScores = function () {
 }
 
 var decrementTimer = function () {
+    quizTimeInSec--;
     if (quizTimeInSec == 0) {
         //stop the timer
         clearTimeout(timerTimeout);
@@ -267,7 +267,6 @@ var decrementTimer = function () {
         endQuiz();
     }
     timerEl.textContent = "Time left: " + quizTimeInSec;
-    quizTimeInSec--;
 }
 
 var hideAllContentChildDivs = function () {
