@@ -84,18 +84,13 @@ var playerInitials;
 var displayWelcome = function () {
     console.log("displayWelcome: Displaying welcome screen");
 
-    //reset questions asked to 0, since we're starting a new quiz
+    //reset questions asked to 0, reset the timer, since we're starting a new quiz
     questionsAsked = 0;
-
-    //reset the timer, since we're starting a new quiz
     quizTimeInSec = 75;
 
     //hide all the child divs of page-content and just display the welcome div
     hideAllContentChildDivs();
     welcomePageDiv.style.display = "block";
-    welcomePageDiv.querySelector("h1").textContent = "Coding Challenge Quiz";
-    welcomePageDiv.querySelector("p").textContent = "Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your score/time by ten seconds!";
-    startQuizBtn.textContent = "Start Quiz";
 }
 
 var displayQuestionAndAnswers = function () {
@@ -118,7 +113,7 @@ var displayQuestionAndAnswers = function () {
     questionsPageDiv.appendChild(questionEl);
 
     //create a container for the answer buttons
-    var answerButtonContainer = document.createElement("div")
+    var answerButtonContainer = document.createElement("div");
     answerButtonContainer.setAttribute("class", "answer-btn-container");
     questionsPageDiv.appendChild(answerButtonContainer);
 
@@ -227,6 +222,9 @@ var showHighScores = function () {
     hideAllContentChildDivs();
     highScoresDiv.style.display = "block";
 
+    //clear the timeout in case user clicks "view high scores" while taking a quiz
+    clearTimeout(timerTimeout);
+    
     //hide the timer
     timerEl.textContent = "";
 
