@@ -200,13 +200,23 @@ var saveHighScore = function () {
 var clearHighScores = function () {
     console.log("clearHighScores: deleting local storage")
 
-    //loop through all items in local storage and only delete the ones we want
+    var itemsToDelete = [];
+    //loop through all items in local storage and add the ones we want to delete to the itemsToDelete array
+    //itemsToDelete array is needed because if we try to delete directly from LocalStorage, the index changes and we end up 
+    //only partially deleting the keys we want
     for (i = 0; i < window.localStorage.length; i++) {
-        key = window.localStorage.key(i);
+        key = localStorage.key(i);
         if (key.slice(0,9) === "highScore") {
-            localStorage.removeItem(key);
+            itemsToDelete.push(localStorage.key(i));
         }
     }
+
+    //loop through the itemsToDelete array to delete the ones we want from local storage
+    for (i = 0; i < itemsToDelete.length; i++) {
+        localStorage.removeItem(itemsToDelete[i]);
+    }
+
+    //reload the page when done
     showHighScores();
 }
 
