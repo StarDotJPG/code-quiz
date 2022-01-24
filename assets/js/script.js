@@ -182,18 +182,32 @@ var endQuiz = function () {
     endQuizDiv.style.display = "block";
     footerDiv.style.display = "block";
 
-    endQuizDiv.querySelector("h1").textContent = "All done!";
+    //reset input to blank
+    endQuizDiv.querySelector(".initials").value = "";
+
+    //display the final score
     endQuizDiv.querySelector(".final-score-text").textContent = "Your final score is: " + quizTimeInSec;
-    endQuizDiv.querySelector(".enter-initials-text").textContent = "Enter initials: ";
-    submitHighScoreBtn.textContent = "Submit";
 }
 
 var saveHighScore = function () {
+    playerInitials = endQuizDiv.querySelector(".initials").value;
     console.log("saveHighScore: Saving high score: " + playerInitials + " " + quizTimeInSec);
 
-    localStorage.setItem("high score", playerInitials + quizTimeInSec)
+    localStorage.setItem("highScore" + Date.now(), playerInitials + " - " + quizTimeInSec)
     showHighScores();
+}
 
+var clearHighScores = function () {
+    console.log("clearHighScores: deleting local storage")
+
+    //loop through all items in local storage and only delete the ones we want
+    for (i = 0; i < window.localStorage.length; i++) {
+        key = window.localStorage.key(i);
+        if (key.slice(0,9) === "highScore") {
+            localStorage.removeItem(key);
+        }
+    }
+    showHighScores();
 }
 
 var showHighScores = function () {
@@ -206,12 +220,35 @@ var showHighScores = function () {
     //hide the timer
     timerEl.textContent = "";
 
-    highScoresDiv.querySelector("h1").textContent = "High Scores";
-    goBackBtn.textContent = "Go Back";
-    clearHighScoresBtn.textContent = "Clear High Scores";
+    //remove all high score elements since we will dynamically recreate them 
+    highScoresDiv.querySelector(".high-scores-container").innerHTML = "";
 
-    console.log("Got high score: " + localStorage.getItem)
 
+    //get high scores from localStorage and display on page
+    var highScoreContainer = document.querySelector(".high-scores-container");
+
+    //get all items from local storage, but only keep the ones that we want in storageContents
+    var storageContents = [];
+    for (i = 0; i < window.localStorage.length; i++) {
+        key = window.localStorage.key(i);
+        if (key.slice(0,9) === "highScore") {
+            storageContents.push(localStorage.getItem(key));
+        }
+    }
+
+    // show the high scores
+    for (var p = 0; p < storageContents.length; p++) {
+        //create answer button
+        var highScore = document.createElement("p");
+        highScore.setAttribute("class", "high-score");
+
+        //set text of highScore to high score value
+        highScore.textContent = storageContents[p];
+        console.log("Displyaing high score: " + storageContents[p]);
+
+        //add buttons to page
+        highScoreContainer.appendChild(highScore);
+    }
 }
 
 var decrementTimer = function () {
@@ -243,6 +280,7 @@ questionsPageDiv.addEventListener("click", checkAnswer);
 headerHighScoreBtn.addEventListener("click", showHighScores);
 submitHighScoreBtn.addEventListener("click", saveHighScore);
 goBackBtn.addEventListener("click", displayWelcome);
+clearHighScoresBtn.addEventListener("click", clearHighScores);
 
 
 /*END EVENT LISTENERS */

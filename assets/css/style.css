@@ -89,6 +89,12 @@ header {
     margin: auto;
     display: none;
 }
+
+.high-score {
+    background-color: lavender;
+    padding: 5px;
+    
+}
   
 .view-high-scores-btn {
     color: blueviolet;
