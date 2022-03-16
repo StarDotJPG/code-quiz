@@ -1,4 +1,4 @@
-# code-quiz-challenge
+# Code Quiz
 
 ## Purpose
 A quiz game to test your knowledge of JavaScript.
