@@ -9,7 +9,7 @@ A quiz game to test your knowledge of JavaScript.
 * JavaScript
 
 ## Website
-https://stardotjpg.github.io/code-quiz-challenge/
+https://stardotjpg.github.io/code-quiz/
 
 ## Contribution
 Made with ❤️ by Jason Greenia
